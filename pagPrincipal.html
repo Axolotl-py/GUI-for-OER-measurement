@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Integrada OER</title>
+    <style>
+        :root {
+            --cor-primaria: #2d3b55;
+            --cor-secundaria: #4a5d8c;
+            --cor-destaque: #5d8aff;
+            --cor-fundo: #121826;
+            --cor-fundo-painel: #1e2536;
+            --cor-texto: #e0e6ff;
+            --cor-texto-secundario: #a0a8c9;
+            --cor-borda: #2a3249;
+            --cor-sucesso: #4caf50;
+            --cor-aviso: #ff9800;
+            --cor-erro: #f44336;
+            --sombra: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --transicao: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-image: radial-gradient(circle at 10% 20%, rgba(45, 59, 85, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(93, 138, 255, 0.05) 0%, transparent 20%);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0 40px;
+            color: var(--cor-texto);
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--cor-destaque), transparent);
+            border-radius: 2px;
+        }
+
+        h2 {
+            color: var(--cor-texto);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 20px;
+            background-color: var(--cor-destaque);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .painel {
+            background-color: var(--cor-fundo-painel);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--cor-borda);
+            box-shadow: var(--sombra);
+            transition: var(--transicao);
+        }
+
+        .painel:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+            border-color: var(--cor-secundaria);
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--cor-texto-secundario);
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--cor-borda);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--cor-texto);
+            font-size: 1rem;
+            transition: var(--transicao);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--cor-destaque);
+            box-shadow: 0 0 0 3px rgba(93, 138, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        input::placeholder {
+            color: rgba(160, 168, 201, 0.5);
+        }
+
+        button {
+            background-color: var(--cor-destaque);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transicao);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: var(--cor-secundaria);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 138, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: var(--cor-borda);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--cor-texto-secundario);
+        }
+
+        .status-vazio {
+            color: var(--cor-texto-secundario);
+        }
+
+        .status-sucesso {
+            color: var(--cor-sucesso);
+            border-left-color: var(--cor-sucesso);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .status-aviso {
+            color: var(--cor-aviso);
+            border-left-color: var(--cor-aviso);
+            background-color: rgba(255, 152, 0, 0.1);
+        }
+
+        .status-erro {
+            color: var(--cor-erro);
+            border-left-color: var(--cor-erro);
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        .diretorio-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .diretorio-item label {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .diretorio-item button {
+            width: auto;
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+
+        .status-diretorio {
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+
+        .execucao-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #btn_executar {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            width: auto;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        #exec_status {
+            min-height: 24px;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cor-borda);
+            color: var(--cor-texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        /* Ícones nos botões de diretório */
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .painel {
+                padding: 20px;
+            }
+            
+            .diretorio-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .diretorio-item button {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript" src="/eel.js"></script>
+    <h1>Análise Integrada OER</h1>
+    
+    <div class="container">
+        <div class="painel">
+            <h2>Dados da Amostra</h2>
+
+            <div class="campo">
+                <label for="nome_amostra">Nome da Amostra</label>
+                <input type="text" id="nome_amostra" placeholder="Digite o nome da amostra">
+                <p id="nome_status" class="status status-vazio">Aguardando entrada de nome</p>
+            </div>
+
+            <div class="campo">
+                <label for="massa">Massa (g)</label>
+                <input type="number" id="massa" step="0.001" placeholder="Digite a massa em gramas">
+                <p id="massa_status" class="status status-vazio">Aguardando entrada de massa</p>
+            </div>
+        </div>
+
+        <div class="painel">
+            <h2>Diretórios</h2>
+
+            <div class="campo">
+                <div class="diretorio-item">
+                    <label>Diretório do LSV</label>
+                    <button id="btn_lsv"><span class="btn-icon">📁</span> Selecionar diretório LSV</button>
+                </div>
+                <p id="lsv_status" class="status-diretorio status status-vazio">Nenhum diretório selecionado</p>
+            </div>
+
+            <div class="campo">
+                <div class="diretorio-item">
+                    <label>Diretório do EIS</label>
+                    <button id="btn_eis"><span class="btn-icon">📁</span> Selecionar diretório EIS</button>
+                </div>
+                <p id="eis_status" class="status-diretorio status status-vazio">Nenhum diretório selecionado</p>
+            </div>
+
+            <div class="campo">
+                <div class="diretorio-item">
+                    <label>Diretório do CV</label>
+                    <button id="btn_cv"><span class="btn-icon">📁</span> Selecionar diretório CV</button>
+                </div>
+                <p id="cv_status" class="status-diretorio status status-vazio">Nenhum diretório selecionado</p>
+            </div>
+
+            <div class="campo">
+                <div class="diretorio-item">
+                    <label>Diretório de Saída</label>
+                    <button id="btn_saida"><span class="btn-icon">📂</span> Selecionar diretório de saída</button>
+                </div>
+                <p id="saida_status" class="status-diretorio status status-vazio">Nenhum diretório selecionado</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="painel">
+        <h2>Execução da Análise</h2>
+        <div class="execucao-container">
+            <button id="btn_executar">
+                <span class="btn-icon">▶️</span> Executar análise
+            </button>
+            <p id="exec_status" class="status"></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        Sistema de Análise Integrada OER - Desenvolvido por G.M.Santos
+    </div>
+
+    <script>
+        // Elementos da interface
+        const inputNome = document.getElementById("nome_amostra");
+        const inputMassa = document.getElementById("massa");
+        const statusNome = document.getElementById("nome_status");
+        const statusMassa = document.getElementById("massa_status");
+
+        // Atualizar status do nome da amostra
+        inputNome.addEventListener("change", function () {
+            const nome = inputNome.value.trim();
+            
+            if (nome) {
+                eel.set_nome_amostra(nome)().then(function (resposta) {
+                    statusNome.innerText = resposta;
+                    statusNome.className = "status status-sucesso";
+                }).catch(function (erro) {
+                    statusNome.innerText = "Erro: " + erro;
+                    statusNome.className = "status status-erro";
+                });
+            } else {
+                statusNome.innerText = "Aguardando entrada de nome";
+                statusNome.className = "status status-vazio";
+            }
+        });
+
+        // Atualizar status da massa
+        inputMassa.addEventListener("change", function () {
+            const massa = inputMassa.value;
+            
+            if (massa && parseFloat(massa) > 0) {
+                eel.set_massa(massa)().then(function (resposta) {
+                    statusMassa.innerText = resposta;
+                    statusMassa.className = "status status-sucesso";
+                }).catch(function (erro) {
+                    statusMassa.innerText = "Erro: " + erro;
+                    statusMassa.className = "status status-erro";
+                });
+            } else {
+                statusMassa.innerText = "Aguardando entrada de massa válida";
+                statusMassa.className = "status status-vazio";
+            }
+        });
+
+        // Selecionar diretório LSV
+        document.getElementById("btn_lsv").addEventListener("click", function () {
+            eel.escolher_diretorio_lsv()().then(function (caminho) {
+                const statusLSV = document.getElementById("lsv_status");
+                statusLSV.innerText = caminho || "Nenhum diretório selecionado";
+                statusLSV.className = caminho ? "status-diretorio status status-sucesso" : "status-diretorio status status-vazio";
+            });
+        });
+
+        // Selecionar diretório EIS
+        document.getElementById("btn_eis").addEventListener("click", function () {
+            eel.escolher_diretorio_EIS()().then(function (caminho) {
+                const statusEIS = document.getElementById("eis_status");
+                statusEIS.innerText = caminho || "Nenhum diretório selecionado";
+                statusEIS.className = caminho ? "status-diretorio status status-sucesso" : "status-diretorio status status-vazio";
+            });
+        });
+
+        // Selecionar diretório CV
+        document.getElementById("btn_cv").addEventListener("click", function () {
+            eel.escolher_diretorio_CV()().then(function (caminho) {
+                const statusCV = document.getElementById("cv_status");
+                statusCV.innerText = caminho || "Nenhum diretório selecionado";
+                statusCV.className = caminho ? "status-diretorio status status-sucesso" : "status-diretorio status status-vazio";
+            });
+        });
+
+        // Selecionar diretório de saída
+        document.getElementById("btn_saida").addEventListener("click", function () {
+            eel.escolher_diretorio_saida()().then(function (caminho) {
+                const statusSaida = document.getElementById("saida_status");
+                statusSaida.innerText = caminho || "Nenhum diretório selecionado";
+                statusSaida.className = caminho ? "status-diretorio status status-sucesso" : "status-diretorio status status-vazio";
+            });
+        });
+
+        // Executar análise
+        document.getElementById("btn_executar").addEventListener("click", function () {
+            const execStatus = document.getElementById("exec_status");
+            execStatus.innerText = "Verificando entradas...";
+            execStatus.className = "status status-aviso";
+            
+            // Desabilitar botão durante a execução
+            const btnExecutar = document.getElementById("btn_executar");
+            btnExecutar.disabled = true;
+            btnExecutar.innerHTML = '<span class="btn-icon">⏳</span> Processando...';
+
+            eel.processar_dados()().then(function (resposta) {
+                execStatus.innerText = resposta;
+                execStatus.className = "status status-sucesso";
+                btnExecutar.disabled = false;
+                btnExecutar.innerHTML = '<span class="btn-icon">▶️</span> Executar análise';
+            }).catch(function (erro) {
+                execStatus.innerText = "Erro: " + erro;
+                execStatus.className = "status status-erro";
+                btnExecutar.disabled = false;
+                btnExecutar.innerHTML = '<span class="btn-icon">▶️</span> Executar análise';
+            });
+        });
+
+        // Inicialização - verificar se há valores previamente preenchidos
+        window.addEventListener('DOMContentLoaded', function() {
+            // Verificar se os campos já têm valores (se a página foi recarregada)
+            if (inputNome.value.trim()) {
+                inputNome.dispatchEvent(new Event('change'));
+            }
+            
+            if (inputMassa.value) {
+                inputMassa.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+</body>
+</html>
